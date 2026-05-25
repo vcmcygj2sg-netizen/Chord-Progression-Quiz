@@ -4,24 +4,38 @@ Eine Streamlit-App fuer Gehoerbildung im LMS-Kurs. Die App ist als kurze Trainin
 
 ## Uebungsablauf
 
-Die App spielt zuerst ein vollstimmiges Vier-Akkord-Muster. Danach kann der Bass als Hoerhilfe genutzt werden:
+Die App hat ein Menue mit zwei Uebungsarten:
+
+- `4-Chord-Loops`: Vier-Akkord-Muster werden als Stufenfolgen erkannt.
+- `Kadenzmuster`: Vier-Akkord-Muster werden als Kadenzverlaeufe erkannt. Die Antwortmoeglichkeiten sind Kadenznamen, keine Stufensymbole.
+
+In beiden Uebungen spielt die App zuerst ein vollstimmiges Vier-Akkord-Muster. Danach kann der Bass als Hoerhilfe genutzt werden:
 
 - Bass hervorgehoben, waehrend die Akkorde weiterhin hoerbar bleiben.
 - Bass in Sopranlage, erst nach Klick auf eine unauffaellige Zusatz-Schaltflaeche.
 
-Die Antwort bleibt das Vier-Akkord-Muster. Bass-Hoeren ist keine getrennte Aufgabe mehr, sondern eine Strategie zum Erkennen des Patterns.
+Die App wechselt in zufaelligen kleinen Bloecken zwischen zwei Aufgabentypen:
+
+- Ein Soundfile hoeren und aus vier Antwortmoeglichkeiten waehlen.
+- Ein Akkordmuster beziehungsweise Kadenzmuster sehen und aus zwei Soundfiles das passende auswaehlen.
+
+Beim ersten Aufgabentyp bleibt Bass-Hoeren eine Strategie zum Erkennen des Patterns. Beim zweiten Aufgabentyp steht der Vergleich zweier Soundfiles im Vordergrund.
+
+Am unteren Rand stehen drei einfache Zaehler: richtig geloeste Antworten, falsche Antworten und die Trefferquote in Prozent.
 
 Die Progressionen bleiben harmonisch unveraendert. Die Bassnoten werden beim Abspielen aber dynamisch oktaviert, damit zwischen zwei Basstoenen kein Sprung groesser als eine Quinte entsteht. Kommt `I` beziehungsweise `Im` mehrfach in einer Progression vor, bleibt der Tonika-Basston jedes Mal im selben Register.
 
-Als Klangfarben stehen `Orgel`, `E-Piano` und `Synth` zur Auswahl. Die Orgel entspricht dem bisherigen Grundklang.
+Die Klangfarbe wird pro Mission zufaellig aus `Orgel`, `E-Piano` und `Synth` gewaehlt. Die Orgel entspricht dem bisherigen Grundklang.
 
 Die Stufen werden mit Grossbuchstaben notiert. Mollstufen tragen ein `m`, zum Beispiel `VIm`.
 
 ## Level
 
-- `Level 1: Dur & Kadenzen`: diatonische Dur-Folgen, Pop-Patterns und kadenznahe Muster.
-- `Level 2: Mollkontexte`: Vier-Akkord-Muster in natuerlich Moll.
+- `Level 1: Dur`: diatonische Dur-Folgen, Pop-Patterns und kadenznahe Muster.
+- `Level 2: Moll`: Vier-Akkord-Muster in natuerlich Moll.
 - `Level 3: Borrowed Chords`: Durkontexte mit geliehenen Akkorden wie `bVII`, `bVI`, `bIII` und `IVm`.
+
+Die Kadenz-Uebung nutzt einen gemeinsamen Pool aus Dur- und Mollkadenzen.
 
 ## Didaktische Idee
 
@@ -58,16 +72,19 @@ Eine genaue Anleitung steht in [LMS_EINBETTUNG.md](LMS_EINBETTUNG.md).
 
 ## GitHub und Streamlit Community Cloud
 
-Fuer GitHub gehoeren diese Dateien ins Repository:
+Fuer GitHub braucht die App mindestens diese Dateien:
 
 - `app.py`
 - `midi_engine.py`
 - `requirements.txt`
+
+Diese Dateien sind sinnvoll, aber nicht zwingend noetig:
+
 - `.streamlit/config.toml`
-- `.gitignore`
 - `README.md`
 - `LMS_EINBETTUNG.md`
 - `GITHUB_STREAMLIT_CHECKLIST.md`
+- `.gitignore`
 
 In Streamlit Community Cloud ist die Startdatei:
 
