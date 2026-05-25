@@ -55,7 +55,7 @@ LOOP_LEVELS = {
         ],
     },
     "level_2": {
-        "title": "Level 2. Äolisches und harmonisches Moll",
+        "title": "Level 2: Äolisches und harmonisches Moll",
         "scale_name": "Natuerlich Moll",
         "items": [
             {"progression": "Im - VII - VI - VII", "gesture": "Mollzentrum -> Rueckung -> tiefere Farbe -> Rueckung", "tip": "Der Bass pendelt zwischen 1, 7 und 6."},
@@ -438,7 +438,7 @@ def submit_answer(answer: str) -> None:
         st.session_state.answered = True
         st.session_state.score = st.session_state.get("score", 0) + 1
         feedback_title = "Richtig."
-        if exercise["mode"] == "loops":
+        if exercise["mode"] == "loops" and not st.session_state.get("show_training_mode", False):
             st.session_state.loop_streak = st.session_state.get("loop_streak", 0) + 1
             next_level = next_loop_level_id(st.session_state.active_loop_level)
             if st.session_state.loop_streak >= LOOP_STREAK_TARGET and next_level is not None:
@@ -453,7 +453,7 @@ def submit_answer(answer: str) -> None:
         return
 
     st.session_state.tried_answers.append(answer)
-    if exercise["mode"] == "loops":
+    if exercise["mode"] == "loops" and not st.session_state.get("show_training_mode", False):
         st.session_state.loop_streak = 0
     st.session_state.wrong_count = st.session_state.get("wrong_count", 0) + 1
     st.session_state.feedback = {
@@ -618,6 +618,42 @@ def reset_to_first_loop_level() -> None:
     new_exercise()
 
 
+def switch_loop_level(level_id: str) -> None:
+    st.session_state.active_loop_level = level_id
+    st.session_state.loop_streak = 0
+    new_exercise()
+
+
+def render_training_mode_controls() -> None:
+    training_mode = st.session_state.get("show_training_mode", False)
+    label = "Zurück in den Challenge-Modus" if training_mode else "Trainingsmodus"
+    if st.button(label, use_container_width=True):
+        if training_mode:
+            st.session_state.show_training_mode = False
+            st.session_state.active_loop_level = "level_1"
+            st.session_state.loop_streak = 0
+            new_exercise()
+        else:
+            st.session_state.show_training_mode = True
+            st.session_state.loop_streak = 0
+        st.rerun()
+
+    if not training_mode:
+        return
+
+    level_ids = list(LOOP_LEVELS.keys())
+    selected_level = st.radio(
+        "Levelauswahl",
+        level_ids,
+        index=level_ids.index(st.session_state.active_loop_level),
+        format_func=lambda level_id: LOOP_LEVELS[level_id]["title"],
+        horizontal=False,
+    )
+    if selected_level != st.session_state.active_loop_level:
+        switch_loop_level(selected_level)
+        st.rerun()
+
+
 st.set_page_config(
     page_title=APP_TITLE,
     layout="centered",
@@ -766,6 +802,8 @@ if "wrong_count" not in st.session_state:
     st.session_state.wrong_count = 0
 if "loop_streak" not in st.session_state:
     st.session_state.loop_streak = 0
+if "show_training_mode" not in st.session_state:
+    st.session_state.show_training_mode = False
 
 st.title(APP_TITLE)
 
@@ -785,6 +823,7 @@ if selected_mode != st.session_state.active_mode:
 
 if st.session_state.active_mode == "loops":
     render_loop_progress()
+    render_training_mode_controls()
     if st.button("Zurück zu Level 1", use_container_width=True):
         reset_to_first_loop_level()
         st.rerun()
