@@ -453,7 +453,7 @@ def option_label(option: str, exercise: dict) -> str:
 def render_audio_controls(exercise: dict, instrument: str) -> None:
     st.markdown("### Höre zuerst das ganze Pattern")
     st.markdown(
-        "<div class='skill-note'>Versuche, den Gesamtverlauf zu erfassen. Wenn du unsicher bist, nutze darunter die Bass-Hilfen.</div>",
+        "<div class='skill-note'>Versuche, den Bassverlauf zu erfassen. Wenn du unsicher bist, nutze darunter die Bass-Hilfen.</div>",
         unsafe_allow_html=True,
     )
     st.audio(
@@ -488,6 +488,12 @@ def render_feedback() -> None:
     if feedback:
         if feedback["kind"] == "success":
             st.success(feedback["title"])
+            exercise = st.session_state.get("exercise", {})
+            if exercise.get("mode") == "cadences":
+                st.markdown(
+                    f"<div class='solution-line'>Stufenfolge: {normalize_progression(exercise['progression'])}</div>",
+                    unsafe_allow_html=True,
+                )
             if st.session_state.get("play_success_sound"):
                 render_success_sound()
                 st.session_state.play_success_sound = False
@@ -636,6 +642,14 @@ st.markdown(
         font-size: 1.15rem;
         font-weight: 700;
         margin: 0.35rem 0 1rem 0;
+        padding: 0.35rem 0 0.35rem 0.75rem;
+    }
+    .solution-line {
+        border-left: 4px solid #1f7a6d;
+        color: #182026;
+        font-size: 0.98rem;
+        font-weight: 700;
+        margin: 0.45rem 0 0.85rem 0;
         padding: 0.35rem 0 0.35rem 0.75rem;
     }
     .scoreboard {
