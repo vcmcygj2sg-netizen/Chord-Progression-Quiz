@@ -612,12 +612,6 @@ def render_loop_progress() -> None:
     )
 
 
-def reset_to_first_loop_level() -> None:
-    st.session_state.active_loop_level = "level_1"
-    st.session_state.loop_streak = 0
-    new_exercise()
-
-
 def switch_loop_level(level_id: str) -> None:
     st.session_state.active_loop_level = level_id
     st.session_state.loop_streak = 0
@@ -824,9 +818,6 @@ if selected_mode != st.session_state.active_mode:
 if st.session_state.active_mode == "loops":
     render_loop_progress()
     render_training_mode_controls()
-    if st.button("Zurück zu Level 1", use_container_width=True):
-        reset_to_first_loop_level()
-        st.rerun()
 
 exercise = st.session_state.exercise
 instrument = exercise["instrument"]
