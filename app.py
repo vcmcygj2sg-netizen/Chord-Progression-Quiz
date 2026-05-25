@@ -20,6 +20,7 @@ TASK_TYPES = {
     "identify": "Hoeren und benennen",
     "choose_audio": "Passendes Audio waehlen",
 }
+LOOP_STREAK_TARGET = 6
 ROMAN_NUMBERS = {
     "I": "1",
     "II": "2",
@@ -160,6 +161,14 @@ def cadence_items() -> list[dict]:
         for item in level["items"]:
             items.append({**item, "scale_name": level["scale_name"]})
     return items
+
+
+def next_loop_level_id(current_level: str) -> str | None:
+    level_ids = list(LOOP_LEVELS.keys())
+    current_index = level_ids.index(current_level)
+    if current_index + 1 >= len(level_ids):
+        return None
+    return level_ids[current_index + 1]
 
 
 def reset_task_cycle() -> None:
@@ -428,14 +437,24 @@ def submit_answer(answer: str) -> None:
     if answer == exercise["correct"]:
         st.session_state.answered = True
         st.session_state.score = st.session_state.get("score", 0) + 1
+        feedback_title = "Richtig."
+        if exercise["mode"] == "loops":
+            st.session_state.loop_streak = st.session_state.get("loop_streak", 0) + 1
+            next_level = next_loop_level_id(st.session_state.active_loop_level)
+            if st.session_state.loop_streak >= LOOP_STREAK_TARGET and next_level is not None:
+                st.session_state.active_loop_level = next_level
+                st.session_state.loop_streak = 0
+                feedback_title = f"Richtig. Neues Level: {LOOP_LEVELS[next_level]['title']}."
         st.session_state.feedback = {
             "kind": "success",
-            "title": "Richtig.",
+            "title": feedback_title,
         }
         st.session_state.play_success_sound = True
         return
 
     st.session_state.tried_answers.append(answer)
+    if exercise["mode"] == "loops":
+        st.session_state.loop_streak = 0
     st.session_state.wrong_count = st.session_state.get("wrong_count", 0) + 1
     st.session_state.feedback = {
         "kind": "warning",
@@ -577,6 +596,22 @@ def render_scoreboard() -> None:
     )
 
 
+def render_loop_progress() -> None:
+    level_title = LOOP_LEVELS[st.session_state.active_loop_level]["title"]
+    next_level = next_loop_level_id(st.session_state.active_loop_level)
+    streak = st.session_state.get("loop_streak", 0)
+    streak_display = f"{streak}/{LOOP_STREAK_TARGET}" if next_level else f"{streak}"
+    st.markdown(
+        f"""
+        <div class="level-status">
+            <div><span>Level</span><strong>{level_title}</strong></div>
+            <div><span>Streak</span><strong>{streak_display}</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 st.set_page_config(
     page_title=APP_TITLE,
     layout="centered",
@@ -652,26 +687,37 @@ st.markdown(
         margin: 0.45rem 0 0.85rem 0;
         padding: 0.35rem 0 0.35rem 0.75rem;
     }
-    .scoreboard {
+    .scoreboard,
+    .level-status {
         border-top: 1px solid #d8dee5;
         display: grid;
         gap: 0.5rem;
-        grid-template-columns: repeat(3, 1fr);
         margin-top: 1rem;
         padding-top: 0.8rem;
     }
-    .scoreboard div {
+    .scoreboard {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .level-status {
+        grid-template-columns: repeat(2, 1fr);
+        margin-bottom: 0.9rem;
+        margin-top: 0.35rem;
+    }
+    .scoreboard div,
+    .level-status div {
         background: #f6f7f9;
         border-radius: 8px;
         padding: 0.55rem 0.65rem;
     }
-    .scoreboard span {
+    .scoreboard span,
+    .level-status span {
         color: #64717f;
         display: block;
         font-size: 0.8rem;
         margin-bottom: 0.15rem;
     }
-    .scoreboard strong {
+    .scoreboard strong,
+    .level-status strong {
         color: #1f7a6d;
         display: block;
         font-size: 1.15rem;
@@ -712,6 +758,8 @@ if "score" not in st.session_state:
     st.session_state.score = 0
 if "wrong_count" not in st.session_state:
     st.session_state.wrong_count = 0
+if "loop_streak" not in st.session_state:
+    st.session_state.loop_streak = 0
 
 st.title(APP_TITLE)
 
@@ -730,18 +778,7 @@ if selected_mode != st.session_state.active_mode:
     st.rerun()
 
 if st.session_state.active_mode == "loops":
-    level_ids = list(LOOP_LEVELS.keys())
-    selected_level = st.radio(
-        "Level",
-        level_ids,
-        index=level_ids.index(st.session_state.active_loop_level),
-        format_func=lambda level_id: LOOP_LEVELS[level_id]["title"],
-        horizontal=True,
-    )
-    if selected_level != st.session_state.active_loop_level:
-        st.session_state.active_loop_level = selected_level
-        new_exercise()
-        st.rerun()
+    render_loop_progress()
 
 exercise = st.session_state.exercise
 instrument = exercise["instrument"]
