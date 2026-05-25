@@ -55,7 +55,7 @@ LOOP_LEVELS = {
         ],
     },
     "level_2": {
-        "title": "Level 2: Moll",
+        "title": "Level 2. Äolisches und harmonisches Moll",
         "scale_name": "Natuerlich Moll",
         "items": [
             {"progression": "Im - VII - VI - VII", "gesture": "Mollzentrum -> Rueckung -> tiefere Farbe -> Rueckung", "tip": "Der Bass pendelt zwischen 1, 7 und 6."},
