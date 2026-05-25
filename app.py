@@ -453,7 +453,7 @@ def option_label(option: str, exercise: dict) -> str:
 def render_audio_controls(exercise: dict, instrument: str) -> None:
     st.markdown("### Höre zuerst das ganze Pattern")
     st.markdown(
-        "<div class='skill-note'>Versuche, den Bassverlauf zu erfassen. Wenn du unsicher bist, nutze darunter die Bass-Hilfen.</div>",
+        "<div class='skill-note'>Versuche, den Bassverlauf zu erfassen.</div>",
         unsafe_allow_html=True,
     )
     st.audio(
