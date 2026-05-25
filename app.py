@@ -809,7 +809,7 @@ st.title(APP_TITLE)
 
 mode_ids = list(PRACTICE_MODES.keys())
 selected_mode = st.radio(
-    "Auswahl der Übung",
+    "Wähle eine Übung",
     mode_ids,
     index=mode_ids.index(st.session_state.active_mode),
     format_func=lambda mode_id: PRACTICE_MODES[mode_id],
