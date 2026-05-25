@@ -612,6 +612,12 @@ def render_loop_progress() -> None:
     )
 
 
+def reset_to_first_loop_level() -> None:
+    st.session_state.active_loop_level = "level_1"
+    st.session_state.loop_streak = 0
+    new_exercise()
+
+
 st.set_page_config(
     page_title=APP_TITLE,
     layout="centered",
@@ -779,6 +785,9 @@ if selected_mode != st.session_state.active_mode:
 
 if st.session_state.active_mode == "loops":
     render_loop_progress()
+    if st.button("Zurück zu Level 1", use_container_width=True):
+        reset_to_first_loop_level()
+        st.rerun()
 
 exercise = st.session_state.exercise
 instrument = exercise["instrument"]
